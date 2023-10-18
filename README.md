@@ -11,14 +11,17 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages).
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+# AMLV
+
+Apple Music Lyric Viewer, a Flutter package inspired by Apple Music's Lyrics Viewer, this package provides a widget that displays lyrics(srt, lrc, json) in a beautiful way.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- [x] Support for srt, lrc, json lyrics
+- [x] Support for creating custom lyric parsers
+- [x] Support for customizing the lyrics widget
 
-## Getting started
+## Preview
 
 TODO: List prerequisites and provide or point to information on how to
 start using the package.
@@ -32,8 +35,11 @@ to `/example` folder.
 const like = 'sample';
 ```
 
-## Additional information
+## LICENSE
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+MIT License
+
+Copyright (c) 2021 lhamy.codes
+
+[LICENSE](/LICENSE) file
