@@ -1,7 +1,5 @@
 library amlv;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/models/lyric.dart';
+export 'src/models/lyric_line.dart';
+export 'src/parser/lyric_parser.dart';
