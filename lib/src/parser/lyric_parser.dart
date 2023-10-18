@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import '../../amlv.dart' show Lyric;
 
 abstract class LyricParser<T> {
-  Future<Lyric?> parse(T input);
+  FutureOr<Lyric> parse(T input);
 }

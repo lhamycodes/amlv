@@ -2,12 +2,12 @@ import '../../amlv.dart';
 
 class JsonLyricParser extends LyricParser<List<LyricLine>> {
   @override
-  Future<Lyric?> parse(
+  Lyric parse(
     List<LyricLine> input, {
     String? title,
     String? artist,
     String? album,
-  }) async {
+  }) {
     return Lyric(
       title: title,
       artist: artist,

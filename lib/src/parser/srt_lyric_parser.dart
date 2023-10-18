@@ -4,12 +4,12 @@ import '../../amlv.dart';
 
 class SrtLyricParser extends LyricParser<String> {
   @override
-  Future<Lyric?> parse(
+  Lyric parse(
     String input, {
     String? title,
     String? artist,
     String? album,
-  }) async {
+  }) {
     List<Subtitle> subtitles = parseSrt(input);
 
     Duration duration = Duration(
@@ -21,7 +21,7 @@ class SrtLyricParser extends LyricParser<String> {
       artist: artist,
       album: album,
       duration: duration,
-      lines: [],
+      lines: generateLyricLineFromList(subtitles),
     );
   }
 
@@ -30,7 +30,7 @@ class SrtLyricParser extends LyricParser<String> {
     for (final lines in lyricList) {
       List<String> parsedLines = [];
       for (final line in lines.rawLines) {
-        parsedLines.add(line);
+        parsedLines.add(line.trim());
       }
       ll.add(LyricLine(
         time: Duration(milliseconds: lines.range.begin),
