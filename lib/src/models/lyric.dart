@@ -1,3 +1,5 @@
+import 'package:audioplayers/audioplayers.dart';
+
 import 'lyric_line.dart';
 
 class Lyric {
@@ -5,6 +7,7 @@ class Lyric {
   final String? artist;
   final String? album;
   final Duration? duration;
+  final Source? audio;
   final List<LyricLine> lines;
 
   Lyric({
@@ -12,6 +15,9 @@ class Lyric {
     required this.artist,
     required this.album,
     required this.duration,
+    required this.audio,
     required this.lines,
   });
+
+  bool get canShowTitle => title != null || artist != null;
 }

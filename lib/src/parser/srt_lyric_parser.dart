@@ -5,7 +5,8 @@ import '../../amlv.dart';
 class SrtLyricParser extends LyricParser<String> {
   @override
   Lyric parse(
-    String input, {
+    String input,
+    Source? audio, {
     String? title,
     String? artist,
     String? album,
@@ -22,6 +23,7 @@ class SrtLyricParser extends LyricParser<String> {
       album: album,
       duration: duration,
       lines: generateLyricLineFromList(subtitles),
+      audio: audio,
     );
   }
 

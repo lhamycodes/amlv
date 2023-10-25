@@ -18,7 +18,7 @@ Future<void> main() async {
     3
     00:00:06,383 --> 00:00:09,427
     of what goes on our plate
-    and what stays off.''');
+    and what stays off.''', null);
 
   for (var line in lyric.lines) {
     print("[${line.time}]: ${line.content}");
@@ -61,7 +61,7 @@ Future<void> main() async {
 [02:06.08]Won't you please, please help me?
 [02:10.12]Help me, help me
 [02:12.85]Ooh
-  ''');
+  ''', null);
 
   print(lrcLyric.album);
   for (var line in lrcLyric.lines) {
