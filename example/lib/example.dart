@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:amlv/amlv.dart';
 import 'const.dart';
 
@@ -25,14 +23,15 @@ Future<void> main() async {
   );
 
   for (var line in lyric.lines) {
+    // ignore: avoid_print
     print("[${line.time}]: ${line.content}");
   }
 
   LyricParser lrcParser = LrcLyricParser();
   Lyric lrcLyric = await lrcParser.parse(lrcLyrics, UrlSource(lrcUrlSource));
 
-  print(lrcLyric.album);
   for (var line in lrcLyric.lines) {
+    // ignore: avoid_print
     print("[${line.time}]: ${line.content}");
   }
 }

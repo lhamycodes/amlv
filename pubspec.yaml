@@ -18,6 +18,8 @@ dependencies:
   scroll_to_index: ^3.0.1
   # for playing audio
   audioplayers: ^5.2.0
+  # for animated background
+  simple_animations: ^5.0.2
 
 dev_dependencies:
   flutter_test:

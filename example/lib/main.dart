@@ -12,7 +12,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'AMLV Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -50,11 +51,15 @@ class _MyHomePageState extends State<MyHomePage> {
         ? LyricViewer(
             lyric: lyric!,
             onLyricChanged: (LyricLine line, String source) {
+              // ignore: avoid_print
               print("$source: [${line.time}] ${line.content}");
             },
             onCompleted: () {
+              // ignore: avoid_print
               print("Completed");
             },
+            gradientColor1: const Color(0xFFCC9934),
+            gradientColor2: const Color(0xFF444341),
           )
         : const SizedBox();
   }

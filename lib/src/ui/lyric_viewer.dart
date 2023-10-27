@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../amlv.dart';
@@ -15,19 +18,21 @@ class LyricViewer extends StatefulWidget {
   final Function? onCompleted;
   final LyricChangedCallback? onLyricChanged;
   final double playerIconSize;
-  final Color playerIconColor;
+  final Color playerIconColor, gradientColor1, gradientColor2;
 
   const LyricViewer({
     super.key,
     required this.lyric,
-    this.activeColor = const Color(0xFF000000),
-    this.inactiveColor = const Color(0xFF828282),
+    this.activeColor = Colors.white,
+    this.inactiveColor = Colors.white54,
     this.backwardBuilder,
     this.forwardBuilder,
     this.onCompleted,
     this.onLyricChanged,
     this.playerIconSize = 50,
-    this.playerIconColor = const Color(0xFF000000),
+    this.playerIconColor = Colors.white,
+    this.gradientColor1 = Colors.red,
+    this.gradientColor2 = Colors.black,
   });
 
   @override
@@ -46,6 +51,16 @@ class _LyricViewerState extends State<LyricViewer> {
   int audioDuration = 0;
 
   final AutoScrollController _controller = AutoScrollController();
+
+  Future cleanSwipeInterface() async {
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+            systemNavigationBarColor: Colors.transparent),
+      );
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
+  }
 
   _playAudio() {
     _currentLyricLine = 0;
@@ -135,6 +150,7 @@ class _LyricViewerState extends State<LyricViewer> {
 
   @override
   void initState() {
+    cleanSwipeInterface();
     _playAudio();
     player.onPlayerStateChanged.listen((event) {
       if (event == PlayerState.completed) {
@@ -155,96 +171,130 @@ class _LyricViewerState extends State<LyricViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: widget.lyric.canShowTitle
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(widget.lyric.title!),
-                  Text(widget.lyric.artist!, style: TextStyle(fontSize: 12))
-                ],
-              )
-            : null,
-        centerTitle: false,
-      ),
       resizeToAvoidBottomInset: true,
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _controller,
-                padding: EdgeInsets.only(top: 10),
-                child: Column(
+      body: AnimatedBackground(
+        color1: widget.gradientColor1,
+        color2: widget.gradientColor2,
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: generateLyricItems(widget.lyric.lines),
-                ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(getTimeString(timeProgress)),
-                      Text(getTimeString(audioDuration)),
-                    ],
-                  ),
-                  Slider(
-                    value: timeProgress.toDouble(),
-                    max: audioDuration.toDouble() < 1
-                        ? 10
-                        : audioDuration.toDouble(),
-                    onChanged: (value) {
-                      seekToSec(value.toInt());
-                    },
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (widget.backwardBuilder != null) ...[
-                        PlayerIconButton(
-                          icon: Icons.chevron_left,
-                          size: widget.playerIconSize,
-                          color: widget.playerIconColor,
-                          onTap: () {
-                            if (widget.backwardBuilder != null) {
-                              widget.backwardBuilder!(player, isPlaying);
-                            }
-                          },
-                        ),
-                        horizontalSpace(20),
-                      ],
-                      PlayerIconButton(
-                        icon:
-                            isPlaying ? Icons.pause : Icons.play_arrow_outlined,
-                        size: widget.playerIconSize,
-                        color: widget.playerIconColor,
-                        onTap: () => isPlaying ? pause() : resume(),
+                  children: [
+                    Text(
+                      widget.lyric.title!,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: widget.activeColor,
+                        fontWeight: FontWeight.w700,
                       ),
-                      if (widget.forwardBuilder != null) ...[
-                        horizontalSpace(20),
-                        PlayerIconButton(
-                          icon: Icons.chevron_right,
-                          size: widget.playerIconSize,
-                          color: widget.playerIconColor,
-                          onTap: () {
-                            if (widget.forwardBuilder != null) {
-                              widget.forwardBuilder!(player, isPlaying);
-                            }
-                          },
-                        ),
-                      ],
+                    ),
+                    Text(
+                      widget.lyric.artist!,
+                      style:
+                          TextStyle(fontSize: 16, color: widget.inactiveColor),
+                    )
+                  ],
+                ),
+                verticalSpace(10),
+                Expanded(
+                  child: ShaderMask(
+                    shaderCallback: (Rect rect) {
+                      return LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, Colors.white],
+                        stops: [0.0, 1.0], // 50% transparent, 50% white
+                      ).createShader(rect);
+                    },
+                    blendMode: BlendMode.dstOut,
+                    child: SingleChildScrollView(
+                      controller: _controller,
+                      padding: EdgeInsets.only(top: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: generateLyricItems(widget.lyric.lines),
+                      ),
+                    ),
+                  ),
+                ),
+                verticalSpace(10),
+                Container(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            getTimeString(timeProgress),
+                            style: TextStyle(color: widget.activeColor),
+                          ),
+                          Text(
+                            getTimeString(audioDuration),
+                            style: TextStyle(color: widget.activeColor),
+                          ),
+                        ],
+                      ),
+                      Slider(
+                        value: timeProgress.toDouble(),
+                        max: audioDuration.toDouble() < 1
+                            ? 10
+                            : audioDuration.toDouble(),
+                        onChanged: (value) {
+                          seekToSec(value.toInt());
+                        },
+                        activeColor: widget.activeColor,
+                        inactiveColor: widget.inactiveColor,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (widget.backwardBuilder != null) ...[
+                            PlayerIconButton(
+                              icon: Icons.chevron_left,
+                              size: widget.playerIconSize,
+                              color: widget.playerIconColor,
+                              onTap: () {
+                                if (widget.backwardBuilder != null) {
+                                  widget.backwardBuilder!(player, isPlaying);
+                                }
+                              },
+                            ),
+                            horizontalSpace(20),
+                          ],
+                          PlayerIconButton(
+                            icon: isPlaying
+                                ? Icons.pause
+                                : Icons.play_arrow_outlined,
+                            size: widget.playerIconSize,
+                            color: widget.playerIconColor,
+                            onTap: () => isPlaying ? pause() : resume(),
+                          ),
+                          if (widget.forwardBuilder != null) ...[
+                            horizontalSpace(20),
+                            PlayerIconButton(
+                              icon: Icons.chevron_right,
+                              size: widget.playerIconSize,
+                              color: widget.playerIconColor,
+                              onTap: () {
+                                if (widget.forwardBuilder != null) {
+                                  widget.forwardBuilder!(player, isPlaying);
+                                }
+                              },
+                            ),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-            )
-          ],
+                )
+              ],
+            ),
+          ),
         ),
       ),
     );
