@@ -6,7 +6,7 @@ class SrtLyricParser extends LyricParser<String> {
   @override
   Lyric parse(
     String input,
-    Source? audio, {
+    Source audio, {
     String? title,
     String? artist,
     String? album,

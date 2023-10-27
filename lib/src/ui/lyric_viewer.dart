@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
@@ -27,7 +26,7 @@ class LyricViewer extends StatefulWidget {
     this.forwardBuilder,
     this.onCompleted,
     this.onLyricChanged,
-    this.playerIconSize = 30,
+    this.playerIconSize = 50,
     this.playerIconColor = const Color(0xFF000000),
   });
 
@@ -43,6 +42,9 @@ class _LyricViewerState extends State<LyricViewer> {
 
   bool get _audio => widget.lyric.audio != null;
 
+  int timeProgress = 0;
+  int audioDuration = 0;
+
   final AutoScrollController _controller = AutoScrollController();
 
   _playAudio() {
@@ -51,7 +53,13 @@ class _LyricViewerState extends State<LyricViewer> {
     Source? source = widget.lyric.audio;
     if (source != null) {
       player.play(source);
+      player.onDurationChanged.listen((duration) {
+        audioDuration = duration.inSeconds;
+      });
       player.onPositionChanged.listen((time) {
+        setState(() {
+          timeProgress = time.inSeconds;
+        });
         if (isPlaying) {
           int i = widget.lyric.lines.indexWhere((li) => li.time > time);
           if (i > 0) {
@@ -105,6 +113,26 @@ class _LyricViewerState extends State<LyricViewer> {
     super.dispose();
   }
 
+  resume() async {
+    player.resume();
+  }
+
+  pause() async {
+    player.pause();
+  }
+
+  String getTimeString(int seconds) {
+    String minuteString =
+        '${(seconds / 60).floor() < 10 ? 0 : ''}${(seconds / 60).floor()}';
+    String secondString = '${seconds % 60 < 10 ? 0 : ''}${seconds % 60}';
+    return '$minuteString:$secondString'; // Returns a string with the format mm:ss
+  }
+
+  void seekToSec(int sec) {
+    Duration newPos = Duration(seconds: sec);
+    player.seek(newPos);
+  }
+
   @override
   void initState() {
     _playAudio();
@@ -140,52 +168,82 @@ class _LyricViewerState extends State<LyricViewer> {
         centerTitle: false,
       ),
       resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        controller: _controller,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 30),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: generateLyricItems(widget.lyric.lines),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        color: Colors.transparent,
-        padding: const EdgeInsets.only(bottom: 25, left: 20, right: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (widget.backwardBuilder != null) ...[
-              PlayerIconButton(
-                icon: Icons.chevron_left,
-                size: widget.playerIconSize,
-                color: widget.playerIconColor,
-                onTap: () {
-                  if (widget.backwardBuilder != null) {
-                    widget.backwardBuilder!(player, isPlaying);
-                  }
-                },
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _controller,
+                padding: EdgeInsets.only(top: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: generateLyricItems(widget.lyric.lines),
+                ),
               ),
-              horizontalSpace(20),
-            ],
-            PlayerIconButton(
-              icon: isPlaying ? CupertinoIcons.pause : CupertinoIcons.play,
-              size: widget.playerIconSize,
-              color: widget.playerIconColor,
-              onTap: () => isPlaying ? player.pause() : player.resume(),
             ),
-            if (widget.forwardBuilder != null) ...[
-              horizontalSpace(20),
-              PlayerIconButton(
-                icon: Icons.chevron_right,
-                size: widget.playerIconSize,
-                color: widget.playerIconColor,
-                onTap: () {
-                  if (widget.forwardBuilder != null) {
-                    widget.forwardBuilder!(player, isPlaying);
-                  }
-                },
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(getTimeString(timeProgress)),
+                      Text(getTimeString(audioDuration)),
+                    ],
+                  ),
+                  Slider(
+                    value: timeProgress.toDouble(),
+                    max: audioDuration.toDouble() < 1
+                        ? 10
+                        : audioDuration.toDouble(),
+                    onChanged: (value) {
+                      seekToSec(value.toInt());
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (widget.backwardBuilder != null) ...[
+                        PlayerIconButton(
+                          icon: Icons.chevron_left,
+                          size: widget.playerIconSize,
+                          color: widget.playerIconColor,
+                          onTap: () {
+                            if (widget.backwardBuilder != null) {
+                              widget.backwardBuilder!(player, isPlaying);
+                            }
+                          },
+                        ),
+                        horizontalSpace(20),
+                      ],
+                      PlayerIconButton(
+                        icon:
+                            isPlaying ? Icons.pause : Icons.play_arrow_outlined,
+                        size: widget.playerIconSize,
+                        color: widget.playerIconColor,
+                        onTap: () => isPlaying ? pause() : resume(),
+                      ),
+                      if (widget.forwardBuilder != null) ...[
+                        horizontalSpace(20),
+                        PlayerIconButton(
+                          icon: Icons.chevron_right,
+                          size: widget.playerIconSize,
+                          color: widget.playerIconColor,
+                          onTap: () {
+                            if (widget.forwardBuilder != null) {
+                              widget.forwardBuilder!(player, isPlaying);
+                            }
+                          },
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
               ),
-            ],
+            )
           ],
         ),
       ),

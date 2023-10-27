@@ -5,7 +5,7 @@ import '../../amlv.dart';
 
 class LrcLyricParser extends LyricParser<String> {
   @override
-  Future<Lyric> parse(String input, Source? audio) async {
+  Future<Lyric> parse(String input, Source audio) async {
     final parser = LyricsParser(input);
     final result = await parser.parse();
 

@@ -4,7 +4,7 @@ class JsonLyricParser extends LyricParser<List<LyricLine>> {
   @override
   Lyric parse(
     List<LyricLine> input,
-    Source? audio, {
+    Source audio, {
     String? title,
     String? artist,
     String? album,

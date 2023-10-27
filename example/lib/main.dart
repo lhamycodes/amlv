@@ -1,3 +1,4 @@
+import 'const.dart';
 import 'package:flutter/material.dart';
 import 'package:amlv/amlv.dart';
 
@@ -29,7 +30,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  SrtLyricParser parser = SrtLyricParser();
+  LrcLyricParser parser = LrcLyricParser();
   Lyric? lyric;
 
   @override
@@ -38,27 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
-  _loadLyrics() {
-    lyric = parser.parse(
-      '''
-    1
-    00:00:00,498 --> 00:00:02,827
-    - Here's what I love most
-    about food and diet.
-
-    2
-    00:00:02,827 --> 00:00:06,383
-    We all eat several times a day,
-    and we're totally in charge
-
-    3
-    00:00:06,383 --> 00:00:09,427
-    of what goes on our plate
-    and what stays off.''',
-      null,
-      title: "Test",
-      artist: "Test",
-    );
+  _loadLyrics() async {
+    lyric = await parser.parse(lrcLyrics, UrlSource(lrcUrlSource));
     setState(() {});
   }
 
@@ -68,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ? LyricViewer(
             lyric: lyric!,
             onLyricChanged: (LyricLine line, String source) {
-              print("${line.time}: ${line.content}");
+              print("$source: [${line.time}] ${line.content}");
             },
             onCompleted: () {
               print("Completed");
