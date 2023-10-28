@@ -171,8 +171,7 @@ class _LyricViewerState extends State<LyricViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: AnimatedBackground(
+      body: FluidBackground(
         color1: widget.gradientColor1,
         color2: widget.gradientColor2,
         body: SafeArea(

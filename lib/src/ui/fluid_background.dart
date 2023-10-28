@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:simple_animations/simple_animations.dart';
 
-class AnimatedBackground extends StatefulWidget {
+class FluidBackground extends StatefulWidget {
   final Widget body;
   final Color color1;
   final Color color2;
 
-  const AnimatedBackground({
+  const FluidBackground({
     super.key,
     required this.body,
     required this.color1,
@@ -14,10 +14,10 @@ class AnimatedBackground extends StatefulWidget {
   });
 
   @override
-  State<AnimatedBackground> createState() => _AnimatedBackgroundState();
+  State<FluidBackground> createState() => _FluidBackgroundState();
 }
 
-class _AnimatedBackgroundState extends State<AnimatedBackground> {
+class _FluidBackgroundState extends State<FluidBackground> {
   @override
   Widget build(BuildContext context) {
     final tween = MovieTween()
