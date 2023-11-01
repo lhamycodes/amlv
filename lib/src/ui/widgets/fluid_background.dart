@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:simple_animations/simple_animations.dart';
 
+/// A widget that displays a fluid background.
 class FluidBackground extends StatefulWidget {
+  /// The widget to be displayed on top of the background.
   final Widget body;
+
+  /// The first color of the background.
   final Color color1;
+
+  /// The second color of the background.
   final Color color2;
 
   const FluidBackground({

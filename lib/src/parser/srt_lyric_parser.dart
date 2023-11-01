@@ -2,6 +2,7 @@ import 'package:srt_parser_2/srt_parser_2.dart';
 
 import '../../amlv.dart';
 
+/// Parser for SRT files or SRT formatted strings.
 class SrtLyricParser extends LyricParser<String> {
   @override
   Lyric parse(
@@ -27,6 +28,7 @@ class SrtLyricParser extends LyricParser<String> {
     );
   }
 
+  /// Generate a list of [LyricLine] from a list of [Subtitle].
   List<LyricLine> generateLyricLineFromList(List<Subtitle> lyricList) {
     List<LyricLine> ll = [];
     for (final lines in lyricList) {

@@ -1,15 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../amlv.dart';
 
-typedef PlaybackControlBuilder = Function(AudioPlayer player, bool isPlaying);
-typedef LyricChangedCallback = Function(LyricLine, String);
-
+/// Lyric Viewer / Player
 class LyricViewer extends StatefulWidget {
+  ///
   final Lyric lyric;
   final Color? activeColor;
   final Color? inactiveColor;
@@ -52,16 +48,6 @@ class _LyricViewerState extends State<LyricViewer> {
 
   final AutoScrollController _controller = AutoScrollController();
 
-  Future cleanSwipeInterface() async {
-    if (Platform.isAndroid) {
-      SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(
-            systemNavigationBarColor: Colors.transparent),
-      );
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    }
-  }
-
   _playAudio() {
     _currentLyricLine = 0;
     player.stop();
@@ -81,14 +67,14 @@ class _LyricViewerState extends State<LyricViewer> {
             i--;
           }
           if (i != _currentLyricLine && i < widget.lyric.lines.length) {
-            jumpToSubtitle(i, "listener", play: false, d: time);
+            _jumpToLine(i, "listener", play: false, d: time);
           }
         }
       });
     }
   }
 
-  jumpToSubtitle(int index, String caller, {bool play = true, Duration? d}) {
+  _jumpToLine(int index, String caller, {bool play = true, Duration? d}) {
     List<LyricLine> lines = widget.lyric.lines;
     if (index > lines.length - 1) {
       return;
@@ -114,7 +100,7 @@ class _LyricViewerState extends State<LyricViewer> {
     });
   }
 
-  disposer() {
+  _disposer() {
     _controller.dispose();
     player.stop();
     player.dispose();
@@ -123,29 +109,9 @@ class _LyricViewerState extends State<LyricViewer> {
   @override
   void dispose() {
     if (_audio) {
-      disposer();
+      _disposer();
     }
     super.dispose();
-  }
-
-  resume() async {
-    player.resume();
-  }
-
-  pause() async {
-    player.pause();
-  }
-
-  String getTimeString(int seconds) {
-    String minuteString =
-        '${(seconds / 60).floor() < 10 ? 0 : ''}${(seconds / 60).floor()}';
-    String secondString = '${seconds % 60 < 10 ? 0 : ''}${seconds % 60}';
-    return '$minuteString:$secondString'; // Returns a string with the format mm:ss
-  }
-
-  void seekToSec(int sec) {
-    Duration newPos = Duration(seconds: sec);
-    player.seek(newPos);
   }
 
   @override
@@ -180,116 +146,34 @@ class _LyricViewerState extends State<LyricViewer> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.lyric.title!,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: widget.activeColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      widget.lyric.artist!,
-                      style:
-                          TextStyle(fontSize: 16, color: widget.inactiveColor),
-                    )
-                  ],
+                LyricViewerTitle(
+                  lyric: widget.lyric,
+                  titleColor: widget.activeColor,
+                  subtitleColor: widget.inactiveColor,
                 ),
                 verticalSpace(10),
-                Expanded(
-                  child: ShaderMask(
-                    shaderCallback: (Rect rect) {
-                      return LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Colors.white],
-                        stops: [0.0, 1.0], // 50% transparent, 50% white
-                      ).createShader(rect);
-                    },
-                    blendMode: BlendMode.dstOut,
-                    child: SingleChildScrollView(
-                      controller: _controller,
-                      padding: EdgeInsets.only(top: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: generateLyricItems(widget.lyric.lines),
-                      ),
-                    ),
-                  ),
+                LyricLinesBuilder(
+                  controller: _controller,
+                  currentLyricLine: _currentLyricLine,
+                  lines: widget.lyric.lines,
+                  onLineChanged: (int i, String caller) {
+                    return _jumpToLine(i, caller);
+                  },
+                  activeColor: widget.activeColor,
+                  inactiveColor: widget.inactiveColor,
                 ),
                 verticalSpace(10),
-                Container(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            getTimeString(timeProgress),
-                            style: TextStyle(color: widget.activeColor),
-                          ),
-                          Text(
-                            getTimeString(audioDuration),
-                            style: TextStyle(color: widget.activeColor),
-                          ),
-                        ],
-                      ),
-                      Slider(
-                        value: timeProgress.toDouble(),
-                        max: audioDuration.toDouble() < 1
-                            ? 10
-                            : audioDuration.toDouble(),
-                        onChanged: (value) {
-                          seekToSec(value.toInt());
-                        },
-                        activeColor: widget.activeColor,
-                        inactiveColor: widget.inactiveColor,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (widget.backwardBuilder != null) ...[
-                            PlayerIconButton(
-                              icon: Icons.chevron_left,
-                              size: widget.playerIconSize,
-                              color: widget.playerIconColor,
-                              onTap: () {
-                                if (widget.backwardBuilder != null) {
-                                  widget.backwardBuilder!(player, isPlaying);
-                                }
-                              },
-                            ),
-                            horizontalSpace(20),
-                          ],
-                          PlayerIconButton(
-                            icon: isPlaying
-                                ? Icons.pause
-                                : Icons.play_arrow_outlined,
-                            size: widget.playerIconSize,
-                            color: widget.playerIconColor,
-                            onTap: () => isPlaying ? pause() : resume(),
-                          ),
-                          if (widget.forwardBuilder != null) ...[
-                            horizontalSpace(20),
-                            PlayerIconButton(
-                              icon: Icons.chevron_right,
-                              size: widget.playerIconSize,
-                              color: widget.playerIconColor,
-                              onTap: () {
-                                if (widget.forwardBuilder != null) {
-                                  widget.forwardBuilder!(player, isPlaying);
-                                }
-                              },
-                            ),
-                          ],
-                        ],
-                      ),
-                    ],
-                  ),
+                LyricViewerControls(
+                  player: player,
+                  timeProgress: timeProgress,
+                  audioDuration: audioDuration,
+                  isPlaying: isPlaying,
+                  iconSize: widget.playerIconSize,
+                  iconColor: widget.playerIconColor,
+                  activeColor: widget.activeColor,
+                  inactiveColor: widget.inactiveColor,
+                  backwardBuilder: widget.backwardBuilder,
+                  forwardBuilder: widget.forwardBuilder,
                 )
               ],
             ),
@@ -298,33 +182,4 @@ class _LyricViewerState extends State<LyricViewer> {
       ),
     );
   }
-
-  List<Widget> generateLyricItems(List<LyricLine>? lines) {
-    List<Widget> items = [];
-    for (var i = 0; i < lines!.length; i++) {
-      items.add(AutoScrollTag(
-        controller: _controller,
-        index: i,
-        key: ValueKey(i),
-        child: GestureDetector(
-          onTap: () => jumpToSubtitle(i, "seeker"),
-          child: Text(
-            lines[i].content,
-            style: TextStyle(
-              color: _currentLyricLine == i
-                  ? widget.activeColor
-                  : widget.inactiveColor,
-              fontWeight: FontWeight.w700,
-              fontSize: 24,
-            ),
-          ),
-        ),
-      ));
-      if (i != lines.length - 1) items.add(SizedBox(height: 15));
-    }
-    return items;
-  }
-
-  Widget verticalSpace(double height) => SizedBox(height: height);
-  Widget horizontalSpace(double width) => SizedBox(width: width);
 }

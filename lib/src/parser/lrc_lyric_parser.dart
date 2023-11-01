@@ -3,6 +3,7 @@ import 'package:lyrics_parser/src/models.dart';
 
 import '../../amlv.dart';
 
+/// Parser for LRC files or LRC formatted strings.
 class LrcLyricParser extends LyricParser<String> {
   @override
   Future<Lyric> parse(String input, Source audio) async {
