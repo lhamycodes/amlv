@@ -15,6 +15,10 @@ and the Flutter guide for
 
 Apple Music Lyric Viewer, a Flutter package inspired by Apple Music's Lyrics Viewer, this package provides a widget that displays lyrics(srt, lrc, json) in a beautiful way.
 
+## Installation
+
+How to install it? [Follow Instructions](https://pub.dev/packages/amlv/install)
+
 ## Use Case
 - [x] Music Player
 - [x] Audio Book Player
