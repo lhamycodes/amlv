@@ -1,4 +1,4 @@
-## [0.0.1] - 1st November, 2023.
+## [1.0.0] - 1st November, 2023.
 
 Initial Release.
 
