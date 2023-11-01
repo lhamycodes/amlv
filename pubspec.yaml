@@ -1,6 +1,6 @@
 name: amlv
 description: Inspired by Apple Music's Lyrics Viewer, this package provides a widget that displays lyrics(srt, lrc, json) in a beautiful way.
-version: 0.0.1
+version: 1.0.0
 homepage: https://github.com/lhamycodes/amlv
 
 environment:

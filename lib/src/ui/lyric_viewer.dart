@@ -3,18 +3,44 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../amlv.dart';
 
-/// Lyric Viewer / Player
+/// A widget that renders the AMLV based on the [Lyric] instance.
 class LyricViewer extends StatefulWidget {
-  ///
+  /// The [Lyric] instance.
   final Lyric lyric;
+
+  /// The color of the active elements.
   final Color? activeColor;
+
+  /// The color of the inactive elements.
   final Color? inactiveColor;
+
+  /// The callback for the backward button.
+  /// if `null`, the button will not be displayed.
   final PlaybackControlBuilder? backwardBuilder;
+
+  /// The callback for the forward button.
+  /// if `null`, the button will not be displayed.
   final PlaybackControlBuilder? forwardBuilder;
+
+  /// The callback for when the audio is completed.
   final Function? onCompleted;
+
+  /// The callback for when the [LyricLine] is changed.
   final LyricChangedCallback? onLyricChanged;
+
+  /// The size of the player icon.
   final double playerIconSize;
-  final Color playerIconColor, gradientColor1, gradientColor2;
+
+  /// The color of the player icon.
+  final Color playerIconColor;
+
+  /// The first color of the gradient background.
+  /// this is used for the [FluidBackground] widget alongside `gradientColor2`.
+  final Color gradientColor1;
+
+  /// The second color of the gradient background.
+  /// this is used for the [FluidBackground] widget alongside `gradientColor1`.
+  final Color gradientColor2;
 
   const LyricViewer({
     super.key,

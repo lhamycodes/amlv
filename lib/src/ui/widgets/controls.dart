@@ -2,16 +2,36 @@ import 'package:flutter/material.dart';
 
 import '../../../amlv.dart';
 
+/// Lyric viewer control [backward, play & pause, forward] buttons.
 class LyricViewerControls extends StatefulWidget {
+  /// The [AudioPlayer] instance.
   final AudioPlayer player;
+
+  /// The current time progress of the audio.
   final int timeProgress;
+
+  /// The duration of the audio.
   final int audioDuration;
+
+  /// Whether the audio is playing or not.
   final bool isPlaying;
+
+  /// The size of the icons.
   final double iconSize;
+
+  /// The color of the icons.
   final Color iconColor;
+
+  /// The color of the active elements.
   final Color? activeColor;
+
+  /// The color of the inactive elements.
   final Color? inactiveColor;
+
+  /// The callback for the backward button.
   final PlaybackControlBuilder? backwardBuilder;
+
+  /// The callback for the forward button.
   final PlaybackControlBuilder? forwardBuilder;
 
   const LyricViewerControls({
@@ -33,14 +53,17 @@ class LyricViewerControls extends StatefulWidget {
 }
 
 class _LyricViewerControlsState extends State<LyricViewerControls> {
+  /// Resume the audio player.
   resume() async {
     widget.player.resume();
   }
 
+  /// Pause the audio player.
   pause() async {
     widget.player.pause();
   }
 
+  /// Seek to a specific second.
   void seekToSec(int sec) {
     Duration newPos = Duration(seconds: sec);
     widget.player.seek(newPos);

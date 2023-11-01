@@ -3,12 +3,25 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../../amlv.dart';
 
+/// A widget that displays a list of [LyricLine].
 class LyricLinesBuilder extends StatelessWidget {
+  /// The [AutoScrollController] instance
+  /// which helps with scrolling to [LyricLine].
   final AutoScrollController controller;
+
+  /// The index of the current [LyricLine].
   final int currentLyricLine;
+
+  /// The list of [LyricLine] to be displayed.
   final List<LyricLine>? lines;
+
+  /// The callback for when the [LyricLine] is changed.
   final Function(int, String) onLineChanged;
+
+  /// The color of the active [LyricLine].
   final Color? activeColor;
+
+  /// The color of the inactive [LyricLine].
   final Color? inactiveColor;
 
   const LyricLinesBuilder({
@@ -46,6 +59,7 @@ class LyricLinesBuilder extends StatelessWidget {
     );
   }
 
+  /// Generate a list of [Widget] from a list of [LyricLine].
   List<Widget> generateLyricItems(List<LyricLine>? lines) {
     List<Widget> items = [];
     for (var i = 0; i < lines!.length; i++) {

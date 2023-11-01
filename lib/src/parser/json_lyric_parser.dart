@@ -27,11 +27,11 @@ class JsonLyricParser extends LyricParser<List<Map<String, dynamic>>> {
     List<LyricLine> ll = [];
     for (final line in input) {
       /// Check if each line in input contains the required keys (time, content)
-      assert(line.containsKey('time'));
+      assert(line.containsKey('time') && line['time'] is Duration);
       assert(line.containsKey('content'));
 
       ll.add(LyricLine(
-        time: Duration(milliseconds: line['time']),
+        time: line['time'],
         content: line['content'],
       ));
     }
