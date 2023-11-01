@@ -1,5 +1,4 @@
 import 'package:lyrics_parser/lyrics_parser.dart';
-import 'package:lyrics_parser/src/models.dart';
 
 import '../../amlv.dart';
 
@@ -20,7 +19,7 @@ class LrcLyricParser extends LyricParser<String> {
     );
   }
 
-  List<LyricLine> generateLyricLineFromList(List<LcrLyric> lyricList) {
+  List<LyricLine> generateLyricLineFromList(List lyricList) {
     List<LyricLine> ll = [];
     for (final lyric in lyricList) {
       ll.add(LyricLine(
